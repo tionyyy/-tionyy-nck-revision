@@ -1629,8 +1629,10 @@ if(savedUser && remembered){
 } else {
   localStorage.removeItem('user');
   localStorage.removeItem('userRemember');
-  currentUser = null;
-  document.getElementById('loginOverlay').classList.remove('hidden');
+  // Create a guest user so app doesn't get stuck
+  currentUser = {email: 'guest@nckrevisionist.com', password: 'guest', role: 'user', createdAt: new Date().toISOString()};
+  recordOnlineUser(currentUser);
+  document.getElementById('loginOverlay').style.display = 'none';
 }
 
 // Bookmarks
@@ -2225,6 +2227,7 @@ if(currentUser){
   showHome();
   updateBookmarksCount();
   updateTopbarUser();
+  updateAdminVisibility();
 } else {
   document.getElementById('loginOverlay').style.display = 'flex';
 }
