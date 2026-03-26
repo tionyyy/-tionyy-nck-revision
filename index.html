@@ -1630,7 +1630,7 @@ if(savedUser && remembered){
   localStorage.removeItem('user');
   localStorage.removeItem('userRemember');
   // Create a guest user so app doesn't get stuck
-  currentUser = {email: 'guest@nckrevisionist.com', password: 'guest', role: 'user', createdAt: new Date().toISOString()};
+  currentUser = {email: 'guest@nckrevisionist.com', password: 'guest', name: 'Guest User', role: 'user', createdAt: new Date().toISOString()};
   recordOnlineUser(currentUser);
   document.getElementById('loginOverlay').style.display = 'none';
 }
