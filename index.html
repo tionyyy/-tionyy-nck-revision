@@ -885,6 +885,17 @@ const SUBJ_ICONS = {
   'Special Health Issues':'⚕️','Sociology and Anthropology':'🤝',
   'Community Health and Community Diagnosis':'🔬',
 };
+
+// Utility function for shuffling arrays
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
 function subjIcon(s){ for(let k of Object.keys(SUBJ_ICONS)) if(s.includes(k.split(' ')[0])) return SUBJ_ICONS[k]; return '📋'; }
 
 let activeFilter = 'all';
@@ -1094,25 +1105,41 @@ function loadYear(yr, type='p1'){
 }
 
 function loadPaper(yr,session,paperName){
-  clearInterval(timerID);
-  activePaper=DATA.papers.find(p=>p.year===yr&&p.session===session&&p.paper===paperName);
-  if(!activePaper)return;
-  pool=shuffle([...activePaper.questions]);
-  qIdx=0;score=0;answered=false;mode='practice';
-  // Highlight in nav
-  document.querySelectorAll('.paper-btn').forEach(b=>b.classList.remove('active'));
-  const pid=`pb-${yr}-${session.replace(/[\s\/]/g,'-')}-${paperName.replace(/[\s:\/]/g,'-')}`;
-  const pb=document.getElementById(pid);
-  if(pb)pb.classList.add('active');
-  const yb=document.getElementById('yb-'+yr);
-  if(yb&&!yb.classList.contains('open'))yb.classList.add('open');
-  renderExam();
-  closeSidebar();
+  try {
+    clearInterval(timerID);
+    activePaper=DATA.papers.find(p=>p.year===yr&&p.session===session&&p.paper===paperName);
+    if(!activePaper){
+      console.error('Paper not found:', {yr, session, paperName});
+      return;
+    }
+    if(!activePaper.questions || activePaper.questions.length === 0){
+      console.error('Paper has no questions:', activePaper);
+      return;
+    }
+    pool=shuffle([...activePaper.questions]);
+    qIdx=0;score=0;answered=false;mode='practice';
+    // Highlight in nav
+    document.querySelectorAll('.paper-btn').forEach(b=>b.classList.remove('active'));
+    const pid=`pb-${yr}-${session.replace(/[\s\/]/g,'-')}-${paperName.replace(/[\s:\/]/g,'-')}`;
+    const pb=document.getElementById(pid);
+    if(pb)pb.classList.add('active');
+    const yb=document.getElementById('yb-'+yr);
+    if(yb&&!yb.classList.contains('open'))yb.classList.add('open');
+    renderExam();
+    closeSidebar();
+  } catch(e) {
+    console.error('Error loading paper:', e);
+  }
 }
 
 function renderExam(){
-  if(qIdx>=pool.length){renderScore();return;}
-  answered=false;
+  try {
+    if(!pool || pool.length === 0){
+      console.error('No questions in pool');
+      return;
+    }
+    if(qIdx>=pool.length){renderScore();return;}
+    answered=false;
   const p=activePaper, q=pool[qIdx];
   const pct=Math.round(qIdx/pool.length*100);
   const letters=['A','B','C','D','E'];
@@ -1175,8 +1202,18 @@ function renderExam(){
       </div>
     </div>`;
 
-  if(mode==='timed')startTimer();
-  updateBookmarkBtn();
+    if(mode==='timed')startTimer();
+    updateBookmarkBtn();
+  } catch(e) {
+    console.error('Error rendering exam:', e);
+    document.getElementById('content').innerHTML = `
+      <div style="padding:20px;color:var(--txt);">
+        <h3>⚠️ Error Loading Questions</h3>
+        <p>${e.message}</p>
+        <p><a href="javascript:showHome()" style="color:var(--acc);cursor:pointer;">← Return to Home</a></p>
+      </div>
+    `;
+  }
 }
 
 function setMode(m){mode=m;clearInterval(timerID);renderExam();}
@@ -1543,17 +1580,23 @@ let onlineUsers = JSON.parse(localStorage.getItem('onlineUsers') || '[]');
 let topbarMetaCache = '';
 
 function recordOnlineUser(user){
+  if(!user || !user.email) return; // Safety check
   const existing = onlineUsers.find(u => u.email === user.email);
+  const userName = user.name || user.email.split('@')[0];
   if(existing){
     existing.lastSeen = Date.now();
   } else {
     onlineUsers.push({
       ...user,
       lastSeen: Date.now(),
-      avatar: user.name.charAt(0).toUpperCase()
+      avatar: userName.charAt(0).toUpperCase()
     });
   }
-  localStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
+  try {
+    localStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
+  } catch(e) {
+    console.warn('Could not save online users:', e);
+  }
 }
 
 // Keep online status fresh and remove stale entries
@@ -2222,14 +2265,28 @@ function renderUnitScore(){
 
 
 // Initialize app only if logged in
-if(currentUser){
-  buildNav();
-  showHome();
-  updateBookmarksCount();
-  updateTopbarUser();
-  updateAdminVisibility();
+function initializeApp(){
+  if(currentUser){
+    try {
+      buildNav();
+      showHome();
+      updateBookmarksCount();
+      updateTopbarUser();
+      updateAdminVisibility();
+    } catch(e) {
+      console.error('Error initializing app:', e);
+      document.getElementById('loginOverlay').style.display = 'flex';
+    }
+  } else {
+    document.getElementById('loginOverlay').style.display = 'flex';
+  }
+}
+
+// Wait for DOM to be ready
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
-  document.getElementById('loginOverlay').style.display = 'flex';
+  initializeApp();
 }
 </script>
 </body>
