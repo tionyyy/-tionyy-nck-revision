@@ -1,158 +1,46 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LORD TIONYY NCK Ultra</title>
-<style>
-:root {
-  --bg: #060b26;
-  --bg2: #0f1f56;
-  --card: rgba(255,255,255,.05);
-  --txt: #edf2ff;
-  --accent: #33d4ff;
-  --accent2: #b561ff;
-  --danger: #ff4971;
-  --border: rgba(144, 160, 208, 0.24);
-}
-*{box-sizing:border-box;font-family:'Plus Jakarta Sans',Arial,sans-serif;}
-html,body{margin:0;padding:0;background:radial-gradient(circle at 10% 10%,#2e4ba8 0%,#0d1c50 45%,#050a24 100%);color:var(--txt);min-height:100vh;}
-body::before{content:'';position:fixed;inset:0;background:linear-gradient(130deg,rgba(78,55,255,.16),rgba(10,172,255,.12),rgba(255,101,182,.11));pointer-events:none;mix-blend-mode:screen;}
-.app{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
-.card{width:min(540px,100%);background:var(--card);border:1px solid var(--border);border-radius:20px;backdrop-filter:blur(14px);box-shadow:0 20px 60px rgba(0,0,0,.35);padding:28px;position:relative;overflow:hidden;}
-.neon-title{font-size:clamp(1.8rem,4vw,2.7rem);font-weight:900;letter-spacing:.01em;margin-bottom:12px;background:linear-gradient(120deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent;text-shadow:0 3px 20px rgba(51,212,255,.4);
-}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:.28rem .7rem;border-radius:999px;font-size:.76rem;font-weight:700;color:#d3defd;background:rgba(81,103,184,.24);border:1px solid rgba(135, 178, 255, .2);}
-.field{width:100%;margin:9px 0;position:relative;}
-.input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(144,160,208,.34);background:rgba(12,30,84,.68);color:var(--txt);outline:none;transition:all .25s;}
-.input:focus{border-color:var(--accent);box-shadow:0 0 14px rgba(51,212,255,.3);}
-.label{position:absolute;top:-10px;left:14px;font-size:.71rem;color:#abb8d5;letter-spacing:.02em;background:linear-gradient(120deg,rgba(12,30,84,.85),rgba(12,30,84,.85));padding:0 5px;}
-.btn{width:100%;padding:12px 16px;border:none;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer;color:#fff;background:linear-gradient(130deg,var(--accent),var(--accent2));box-shadow:0 10px 28px rgba(18,112,183,.34);transition:all .25s;}
-.btn:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(18,112,183,.45);}
-.btn:active{transform:translateY(1px);}
-.link{color:var(--accent);cursor:pointer;text-decoration:underline;}
-.status{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:.87rem;color:#b9c4e8;}
-.error{color:var(--danger);font-weight:700;margin-top:5px;text-align:center;}
-.hide{display:none !important;}
-.dashboard{display:grid;grid-template-columns:1fr;gap:12px;}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:14px;}
-.stat-card{background:rgba(255,255,255,.08);border:1px solid rgba(89,124,182,.22);border-radius:16px;padding:14px;}
-.stat-number{font-size:1.5rem;font-weight:800;margin-bottom:2px;}
-.stat-label{font-size:.76rem;color:#bdcee5;text-transform:uppercase;letter-spacing:.08em;}
-.summary{margin-top:18px;background:rgba(255,255,255,.05);border:1px solid rgba(92,124,181,.26);border-radius:14px;padding:12px;}
-.gradient-border{position:absolute;inset:0;border-radius:22px;padding:1px;pointer-events:none;background:linear-gradient(130deg, rgba(57,197,255,0.9),rgba(130,85,255,0.7),rgba(255,97,155,0.72));-webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;}
-.nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
-.nav .tab{padding:9px 13px;border-radius:999px;font-weight:700;font-size:.81rem;background:rgba(37,58,130,.45);color:#dbe9ff;cursor:pointer;}
-.nav .tab.on{background:linear-gradient(135deg,rgba(43,204,255,.8),rgba(192,105,255,.8));}
-.table{width:100%;border-collapse:collapse;margin-top:12px;}
-.table th, .table td{padding:10px 8px;text-align:left;border-bottom:1px solid rgba(95,132,194,.30);font-size:.9rem;}
-.table th{color:#acc4e4;font-weight:700;font-size:.78rem;text-transform:uppercase;}
-@media(max-width:640px){.card{padding:22px;}.neon-title{font-size:calc(1.4rem + 1vw);}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 Lord Tionyy NCK Revision</title>
+    <link rel="manifest" href="/manifest.json">
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
 <body>
-<div class="app">
-  <div class="card" id="loginScreen">
-    <div class="gradient-border"></div>
-    <h1 class="neon-title">LORD TIONYY NCK</h1>
-    <p style="margin-bottom:14px;color:#becdf7;">Ultra-Modern Revision Hub | Login to continue</p>
-    <div class="field"><label class="label">Username</label><input class="input" id="username" value="LORD TIONYY"/></div>
-    <div class="field"><label class="label">Password</label><input class="input" id="password" type="password" value="2026"/></div>
-    <div style="display:flex;align-items:center;gap:8px;margin:10px 0;"><input type="checkbox" id="rememberMe"/><label for="rememberMe" style="font-size:.85rem;color:#b6c8e8;">Remember Me</label></div>
-    <button class="btn" id="loginButton">Sign In</button>
-    <p id="loginError" class="error hide"></p>
-    <div class="status"><span>Fast | Secure | Next-Level</span><span id="timeText"></span></div>
-  </div>
 
-  <div class="card hide" id="welcomeScreen">
-    <div class="gradient-border"></div>
-    <h1 class="neon-title">Welcome, LORD TIONYY</h1>
-    <p style="color:#cddcf4;">“I can do all things through Christ who strengthens me.” - Philippians 4:13</p>
-    <p style="color:#c3d0ef;margin-bottom:10px;font-size:.95rem;">Social handles:</p>
-    <p style="margin:0 0 6px;"><a class="link" href="https://instagram.com/lord.tiony" target="_blank" rel="noopener">Instagram: @lord.tiony</a></p>
-    <p style="margin:0 0 6px;"><a class="link" href="https://tiktok.com/@lord.tiony" target="_blank" rel="noopener">TikTok: @lord.tiony</a></p>
-    <p style="margin:0 0 14px;"><a class="link" href="https://wa.me/254717842985" target="_blank" rel="noopener">WhatsApp: 0717842985</a></p>
-    <p style="margin-top:12px;color:#d4ddf2;">Your dashboard is being prepared with dynamic statistics, performance insights, and smart revision paths.</p>
-    <button class="btn" id="goDashboard">Go to Dashboard</button>
-    <div class="status"><span class="link" id="logoutFromWelcome">Logout</span></div>
-  </div>
+<h1>NCK Revision Tool (Enhanced)</h1>
 
-  <div class="card hide" id="dashboardScreen">
-    <div class="gradient-border"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-      <div>
-        <h1 class="neon-title" style="font-size:1.8rem;">Dashboard</h1>
-        <p style="color:#c7d6f5;">OVERVIEW · PROGRESS · REVIEW</p>
-      </div>
-      <div class="nav" id="modeNav">
-        <span class="tab on" data-mode="overview">Overview</span>
-        <span class="tab" data-mode="analysis">Analysis</span>
-        <span class="tab" data-mode="progress">Progress</span>
-      </div>
-    </div>
-
-    <div class="stats">
-      <div class="stat-card"><div class="stat-number" id="papersTotal">58</div><div class="stat-label">Papers</div></div>
-      <div class="stat-card"><div class="stat-number" id="questionsTotal">2871</div><div class="stat-label">Questions</div></div>
-      <div class="stat-card"><div class="stat-number" id="attemptedCount">0</div><div class="stat-label">Attempted</div></div>
-      <div class="stat-card"><div class="stat-number" id="accuracy">0%</div><div class="stat-label">Accuracy</div></div>
-    </div>
-
-    <div class="summary" id="contentPanel">
-      <h3 style="margin:0 0 8px;">Get started with the fastest path</h3>
-      <p style="color:#b7c7ee;line-height:1.5;">Choose a paper from the sidebar and begin a adaptive quiz. Your wrong answers will be automatically collected for review.</p>
-    </div>
-
-    <table class="table" style="margin-top:14px;">
-      <thead><tr><th>Paper</th><th>Questions</th><th>Completed</th><th>Status</th></tr></thead>
-      <tbody id="paperTable">
-        <tr><td>2009 July - Paper 1</td><td>120</td><td>0</td><td><span class="pill">Not started</span></td></tr>
-        <tr><td>2010 Jan - Paper 2</td><td>120</td><td>0</td><td><span class="pill">Not started</span></td></tr>
-      </tbody>
-    </table>
-
-    <div class="status" style="margin-top:14px;"><span class="link" id="logoutFromDashboard">Logout</span><span class="link" id="backToLogin">Reset App</span></div>
-  </div>
-</div>
+<button onclick="toggleMockMode()">Toggle Mock Mode</button>
 
 <script>
-const VALID_USER='LORD TIONYY'; const VALID_PASS='2026';
-const loginScreen=document.getElementById('loginScreen');
-const welcomeScreen=document.getElementById('welcomeScreen');
-const dashboardScreen=document.getElementById('dashboardScreen');
-const loginButton=document.getElementById('loginButton');
-const goDashboard=document.getElementById('goDashboard');
-const logoutFromWelcome=document.getElementById('logoutFromWelcome');
-const logoutFromDashboard=document.getElementById('logoutFromDashboard');
-const backToLogin=document.getElementById('backToLogin');
-const loginError=document.getElementById('loginError');
-const modeNav=document.getElementById('modeNav');
-const contentPanel=document.getElementById('contentPanel');
-let state={attempted:0,correct:0};
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+    });
+}
 
-function showScreen(screen){loginScreen.classList.add('hide');welcomeScreen.classList.add('hide');dashboardScreen.classList.add('hide');screen.classList.remove('hide');}
+let isMockMode = false;
 
-function updateStatus(){ const acc=state.attempted?Math.round(state.correct/state.attempted*100):0; document.getElementById('attemptedCount').textContent=state.attempted; document.getElementById('accuracy').textContent=acc+'%'; }
+function toggleMockMode() {
+    isMockMode = !isMockMode;
+    alert(isMockMode ? "Mock Mode ON" : "Study Mode ON");
+}
 
-loginButton.onclick=()=>{
-  const user=document.getElementById('username').value.trim();
-  const pass=document.getElementById('password').value.trim();
-  const remember=document.getElementById('rememberMe').checked;
-  if(!user||!pass){loginError.textContent='Please enter username and password';loginError.classList.remove('hide');return;}
-  if(user!==VALID_USER||pass!==VALID_PASS){loginError.textContent='Bad login. Try LORD TIONYY / 2026';loginError.classList.remove('hide');return;}
-  loginError.classList.add('hide'); if(remember) localStorage.setItem('tt-remember','1');
-  localStorage.setItem('tt-user',user);
-  showScreen(welcomeScreen);
-};
+async function reportError(qId) {
+    const feedback = prompt("What's wrong?");
+    if (!feedback) return;
 
-goDashboard.onclick=()=>{showScreen(dashboardScreen); updateStatus();};
-logoutFromWelcome.onclick=logoutFromDashboard.onclick=()=>{localStorage.clear(); showScreen(loginScreen);};
-backToLogin.onclick=()=>{localStorage.clear(); showScreen(loginScreen); state={attempted:0,correct:0}; updateStatus();};
+    await fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ qId, feedback })
+    });
 
-modeNav.addEventListener('click', (e)=>{ const t = e.target.closest('.tab'); if(!t) return; modeNav.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); t.classList.add('on'); const mode=t.dataset.mode;
-  if(mode==='analysis') {contentPanel.innerHTML='<h3>AI Analysis</h3><p>Loading advanced performance insights and weak topics.</p>';} else if(mode==='progress'){contentPanel.innerHTML='<h3>Study Progress</h3><p>Track weekly streaks, speed, and accuracy.</p>';} else {contentPanel.innerHTML='<h3>Get started</h3><p>Select a paper and begin. Your answers are tracked automatically.</p>';} });
-
-window.addEventListener('load', () => { if(localStorage.getItem('tt-user')){showScreen(welcomeScreen);} else {showScreen(loginScreen);} });
+    alert("Reported successfully!");
+}
 </script>
+
 </body>
 </html>
