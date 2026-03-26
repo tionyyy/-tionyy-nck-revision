@@ -19,7 +19,22 @@
   --gold:#ffd700;--gold-d:rgba(255,215,0,.13);
   --txt:#eef0ff;--txt2:#9da8d0;--txt3:#505880;
   --fnt:"Plus Jakarta Sans",sans-serif;--mono:"JetBrains Mono",monospace;
-  --r:10px;--r2:14px;}
+  --r:10px;--r2:14px;
+}
+[data-theme="light"]{
+  --bg:#f8f9fa;--s1:#ffffff;--s2:#f1f3f4;--s3:#e8eaed;--s4:#dadce0;
+  --b1:rgba(0,0,0,.08);--b2:rgba(0,0,0,.12);--b3:rgba(0,0,0,.16);
+  --acc:#6200ea;--acc2:#7c4dff;--acc-d:rgba(98,0,234,.08);--acc-g:rgba(98,0,234,.20);
+  --grn:#00c853;--grn-d:rgba(0,200,83,.08);
+  --amb:#ff9800;--amb-d:rgba(255,152,0,.08);
+  --red:#f44336;--red-d:rgba(244,67,54,.08);
+  --pur:#e91e63;--pur-d:rgba(233,30,99,.08);
+  --teal:#00bcd4;--teal-d:rgba(0,188,212,.08);
+  --gold:#ffeb3b;--gold-d:rgba(255,235,59,.08);
+  --txt:#202124;--txt2:#5f6368;--txt3:#80868b;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 body{font-family:var(--fnt);background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;
   background-image:
@@ -29,6 +44,13 @@ body::before{content:'';position:fixed;inset:0;
     radial-gradient(ellipse 60% 40% at 80% 80%,rgba(34,211,238,.06) 0%,transparent 60%);
   background-size:44px 44px,44px 44px,100% 100%,100% 100%;
   pointer-events:none;z-index:0;}
+[data-theme="light"] body::before{
+  background-image:
+    linear-gradient(rgba(0,0,0,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,0,0,.02) 1px,transparent 1px),
+    radial-gradient(ellipse 80% 50% at 20% 10%,rgba(0,0,0,.04) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%,rgba(0,188,212,.03) 0%,transparent 60%);
+}
 .app{display:flex;min-height:100vh;position:relative;z-index:1}
 
 /* ══ SIDEBAR ══ */
@@ -98,9 +120,18 @@ body::before{content:'';position:fixed;inset:0;
 .topbar{height:60px;display:flex;align-items:center;gap:12px;padding:0 26px;
   background:rgba(9,12,26,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(124,77,255,.15);
   border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:50;}
+[data-theme="light"] .topbar{background:rgba(255,255,255,.92);border-bottom:1px solid rgba(0,0,0,.08);}
 .menu-btn{display:none;background:none;border:none;color:var(--txt2);font-size:22px;cursor:pointer}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:6px 12px;flex:1;max-width:300px}
+.search-bar input{background:none;border:none;color:var(--txt);font-size:13px;outline:none;flex:1}
+.search-bar input::placeholder{color:var(--txt3)}
+.search-bar button{background:none;border:none;color:var(--txt3);font-size:16px;cursor:pointer}
 .topbar-title{font-size:14px;font-weight:600;color:var(--txt)}
 .topbar-meta{font-size:11px;color:var(--txt3);margin-left:auto;font-family:var(--mono)}
+.topbar-user{font-size:12px;color:var(--acc);font-weight:600;margin-left:12px;font-family:var(--mono)}
+.theme-toggle{background:none;border:none;color:var(--txt2);font-size:18px;cursor:pointer;padding:4px;border-radius:6px;transition:all .15s}
+.theme-toggle:hover{background:var(--s2);color:var(--txt)}
+[data-theme="light"] .theme-toggle{color:var(--txt2)}
 .content{flex:1;padding:24px;max-width:920px}
 
 /* ══ HOME ══ */
@@ -233,6 +264,9 @@ body::before{content:'';position:fixed;inset:0;
 .exp.no .exp-lbl{color:var(--amb)}
 .q-foot{display:flex;align-items:center;justify-content:space-between;
   padding:10px 20px;border-top:1px solid var(--b1);flex-wrap:wrap;gap:7px}
+.bookmark-btn{background:none;border:none;color:var(--txt3);font-size:16px;cursor:pointer;padding:4px;border-radius:4px;transition:all .15s}
+.bookmark-btn:hover{background:var(--s2);color:var(--txt)}
+.bookmark-btn.bookmarked{color:var(--gold)}
 .btn{padding:7px 15px;border-radius:9px;font-size:13px;font-weight:500;
   border:1px solid var(--b2);background:var(--s2);color:var(--txt2);
   cursor:pointer;transition:all .15s;font-family:var(--fnt)}
@@ -537,9 +571,158 @@ body::before{content:'';position:fixed;inset:0;
   .unit-grid{grid-template-columns:1fr}
 }
 
+/* ══ LOGIN SCREEN ══ */
+.login-overlay{
+  position:fixed;inset:0;z-index:10000;
+  background:radial-gradient(ellipse 120% 80% at 50% 0%,#120a2e 0%,#05070f 50%,#070a1a 100%);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .7s cubic-bezier(.4,0,.2,1), transform .7s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.login-overlay.hidden{opacity:0;transform:scale(1.04);pointer-events:none;}
+
+.login-inner{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;width:100%;max-width:400px;padding:20px 16px;
+}
+
+.login-card{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:32px 28px;width:100%;
+  backdrop-filter:blur(20px);
+  animation:login-in .9s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes login-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+.login-title{
+  font-size:24px;font-weight:800;text-align:center;margin-bottom:8px;
+  background:linear-gradient(135deg,#fff 0%,#c4b5fd 40%,#22d3ee 80%,#00e5a0 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.login-subtitle{font-size:14px;color:#9da8d0;text-align:center;margin-bottom:24px;}
+
+.login-form{display:flex;flex-direction:column;gap:16px;}
+.login-input{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:12px;padding:14px 16px;font-size:16px;color:#fff;
+  outline:none;transition:border-color .2s;
+}
+.login-input:focus{border-color:#7c4dff;}
+.login-input::placeholder{color:#9da8d0;}
+.login-remember{font-size:13px;color:#c9d0e5;display:flex;align-items:center;gap:8px;padding-left:2px;}
+.login-remember input{accent-color:#7c4dff;transform:scale(1.04);}
+
+.login-btn{
+  background:linear-gradient(135deg,#7c4dff 0%,#e879f9 50%,#22d3ee 100%);
+  background-size:200% 200%;
+  color:#fff;font-family:var(--fnt);font-size:16px;font-weight:700;
+  padding:16px 24px;border-radius:99px;border:none;cursor:pointer;
+  box-shadow:0 0 0 1px rgba(255,255,255,.1),0 8px 32px rgba(124,77,255,.5);
+  transition:transform .2s,box-shadow .2s,background-position .3s;
+  animation:btn-glow 3s ease-in-out infinite .8s;
+}
+.login-btn:hover{transform:translateY(-3px);background-position:100% 0}
+.login-btn:active{transform:scale(.97)}
+.login-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+.login-error{
+  background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);
+  border-radius:8px;padding:12px;font-size:14px;color:#ff8fab;text-align:center;
+}
+
+/* ══ ONLINE USERS MODAL ══ */
+.online-modal{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.online-modal.show{opacity:1;pointer-events:all;}
+
+.online-card{
+  background:var(--s1);border:1px solid var(--b1);border-radius:20px;
+  padding:24px;max-width:400px;width:90%;max-height:80vh;overflow-y:auto;
+}
+.online-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.online-title{font-size:18px;font-weight:700;}
+.online-close{background:none;border:none;color:var(--txt2);font-size:20px;cursor:pointer;}
+
+.online-list{display:flex;flex-direction:column;gap:8px;}
+.online-user{
+  display:flex;align-items:center;gap:12px;
+  padding:12px;border-radius:10px;background:var(--s2);
+  border:1px solid var(--b2);
+}
+.online-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,#7c4dff,#e879f9);
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  color:#fff;font-weight:600;
+}
+
+/* AI Chatbot */
+.chatbot-launch{
+  position:fixed;bottom:22px;right:22px;z-index:10050;
+  width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#22d3ee,#7c4dff);
+  color:#fff;font-size:24px;border:none;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+.chatbot-panel{
+  position:fixed;bottom:90px;right:22px;width:320px;max-height:470px;
+  background:var(--s1);border:1px solid var(--b1);border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.28);overflow:hidden;display:none;z-index:10050;
+}
+.chatbot-panel.show{display:block;}
+.chatbot-header{padding:11px 13px;background:linear-gradient(135deg,#7c4dff,#22d3ee);color:#fff;font-weight:700;font-size:13px;display:flex;justify-content:space-between;align-items:center;}
+.chatbot-close{background:none;border:none;color:#fff;font-size:16px;cursor:pointer;}
+.chatbot-body{padding:10px;height:290px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;}
+.chatbot-msg{padding:8px 10px;border-radius:10px;max-width:86%;font-size:13px;line-height:1.35;}
+.chatbot-msg.user{background:rgba(124,77,255,.18);color:#fff;align-self:flex-end;}
+.chatbot-msg.bot{background:rgba(255,255,255,.1);color:#e5e7eb;align-self:flex-start;}
+.chatbot-input-wrap{padding:10px;border-top:1px solid var(--b1);display:flex;gap:8px;}
+.chatbot-input{flex:1;border:1px solid var(--b1);border-radius:10px;padding:8px 10px;background:var(--s2);color:var(--txt);outline:none;}
+.chatbot-send{border:none;padding:8px 12px;border-radius:10px;background:var(--acc);color:#fff;cursor:pointer;}
+
+.online-info{flex:1;}
+.online-name{font-size:14px;font-weight:600;color:var(--txt);}
+.online-status{font-size:12px;color:var(--txt3);}
+
 </style>
 </head>
 <body>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-inner">
+    <div class="login-card">
+      <div class="login-title">Welcome Back</div>
+      <div class="login-subtitle">Sign in to continue your NCK revision journey</div>
+      <form class="login-form" onsubmit="handleLogin(event)">
+        <input type="email" class="login-input" id="loginEmail" placeholder="Email address" required>
+        <input type="password" class="login-input" id="loginPassword" placeholder="Password" required>
+        <label class="login-remember"><input type="checkbox" id="rememberMe" /> Remember me</label>
+        <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+      </form>
+      <div id="loginError" class="login-error" style="display:none;"></div>
+      <div class="login-switch" style="margin-top:12px;text-align:center;font-size:13px;color:#c9d0e5;">
+        <span id="loginSwitchText">Don't have an account?</span>
+        <a href="#" id="loginSwitchLink" onclick="toggleLoginMode(event)" style="color:#7c4dff;text-decoration:none;margin-left:6px;">Sign up</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ONLINE USERS MODAL -->
+<div class="online-modal" id="onlineModal">
+  <div class="online-card">
+    <div class="online-header">
+      <div class="online-title">👥 Online Users</div>
+      <button class="online-close" onclick="closeOnlineModal()">×</button>
+    </div>
+    <div class="online-list" id="onlineList">
+      <!-- Users will be populated here -->
+    </div>
+  </div>
+</div>
 
 <div class="welcome-overlay" id="welcomeOverlay">
   <!-- Ambient glow orbs -->
@@ -631,6 +814,13 @@ body::before{content:'';position:fixed;inset:0;
     <div class="stat-row"><span class="stat-k">Total questions</span><span class="stat-v" id="sQs">2,871</span></div>
     <div class="stat-row"><span class="stat-k">Paper 2</span>
       <span class="stat-v"><span class="badge badge-p2"><span class="dot dot-teal"></span>2,871q total</span></span></div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--b1)">
+      <div class="btn" onclick="showBookmarks()" style="width:100%;text-align:center;margin-bottom:8px">⭐ Bookmarks (${bookmarks.length})</div>
+      <div class="btn" onclick="showStats()" style="width:100%;text-align:center;margin-bottom:8px">📊 My Stats</div>
+      <div class="btn" id="adminPanelBtn" onclick="showAdminPanel()" style="display:none;width:100%;text-align:center;background:var(--gold-d);color:var(--gold);margin-bottom:8px">🛠 Admin Panel</div>
+      <div class="btn" onclick="logout()" style="width:100%;text-align:center;background:var(--red-d);color:var(--red);margin-bottom:8px">🚪 Logout</div>
+      <div class="btn" onclick="resetApp()" style="width:100%;text-align:center;background:rgba(255,166,35,.18);color:var(--amb)">🧹 Reset App</div>
+    </div>
   </div>
 </nav>
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
@@ -639,8 +829,27 @@ body::before{content:'';position:fixed;inset:0;
 <main class="main">
   <div class="topbar">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search questions..." oninput="searchQuestions()">
+      <button onclick="clearSearch()">✕</button>
+    </div>
     <span class="topbar-title" id="topbarTitle">Lord Tionyy NCK Revision</span>
     <span class="topbar-meta" id="topbarMeta"></span>
+    <span class="topbar-user" id="topbarUser"></span>
+    <div style="display:flex;gap:8px;">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+      <button class="theme-toggle" onclick="showOnlineModal()">👥</button>
+    </div>
+  </div>
+  <div class="chatbot-panel" id="chatbotPanel">
+    <div class="chatbot-header">AI Chatbot <button class="chatbot-close" onclick="toggleChatbot()">×</button></div>
+    <div class="chatbot-body" id="chatbotBody"></div>
+    <div class="chatbot-input-wrap">
+      <input id="chatbotInput" class="chatbot-input" placeholder="Ask me about the material..." onkeydown="if(event.key==='Enter'){ sendChatQuery(); }" />
+      <button class="chatbot-send" onclick="sendChatQuery()">Send</button>
+    </div>
+  </div>
+  <button class="chatbot-launch" id="chatbotLaunch" onclick="toggleChatbot()">💬</button>
   </div>
   <div class="content" id="content"></div>
 </main>
@@ -798,6 +1007,7 @@ function showHome(){
     <div class="home-hero">
       <div class="hero-eyebrow"><span class="dot dot-teal"></span> LORD TIONYY · 2,871 QUESTIONS</div>
       <h1>Lord Tionyy<br><span>NCK Revision</span></h1>
+      <p style="font-size:15px;margin-bottom:8px;color:var(--txt)">Hello, <strong>${currentUser ? currentUser.name : 'Learner'}</strong> — your personalised revision starts here.</p>
       <p>Paper 1 (2009–2025) + Paper 2 + OB-GYN + Mock Exams. ${totalQ} questions with answers &amp; rationales.</p>
       <div class="stats-strip">
         <div class="sc"><div class="sc-val">${Object.keys(YEARS).length}</div><div class="sc-lbl">Years</div></div>
@@ -955,7 +1165,10 @@ function renderExam(){
       </div>
       <div class="exp-box" id="expBox"></div>
       <div class="q-foot">
-        <div class="btn" onclick="prevQ()">← Prev</div>
+        <div style="display:flex;gap:8px">
+          <div class="btn" onclick="prevQ()">← Prev</div>
+          <button class="bookmark-btn" id="bookmarkBtn" onclick="toggleBookmark()">☆</button>
+        </div>
         <div class="btn ${isP2?'teal':'primary'}" id="nextBtn" style="display:none" onclick="nextQ()">
           ${qIdx+1<pool.length?'Next →':'See Results'}
         </div>
@@ -963,6 +1176,7 @@ function renderExam(){
     </div>`;
 
   if(mode==='timed')startTimer();
+  updateBookmarkBtn();
 }
 
 function setMode(m){mode=m;clearInterval(timerID);renderExam();}
@@ -998,6 +1212,7 @@ function choose(i,isOk){
   document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
   if(isOk){document.getElementById('opt'+i).classList.add('correct');score++;}
   else{document.getElementById('opt'+i).classList.add('wrong');document.getElementById('opt'+q.ans).classList.add('reveal');}
+  recordProgress(activePaper.year + ' ' + activePaper.session, isOk);
   if(mode!=='exam'){
     document.getElementById('expBox').innerHTML=`
       <div class="exp ${isOk?'ok':'no'}">
@@ -1047,10 +1262,735 @@ function renderScore(){
     </div>`;
 }
 
-function shuffle(a){return a.sort(()=>Math.random()-.5)}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSidebar();});
+
+// Theme toggle
+function toggleTheme(){
+  const html = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  const isDark = html.getAttribute('data-theme') !== 'light';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  toggle.textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+}
+
+// Load saved theme
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+document.getElementById('themeToggle').textContent = savedTheme === 'light' ? '☀️' : '🌙';
+
+// User authentication
+let currentUser = null;
+let loginMode = 'login'; // 'login' or 'signup'
+
+function getUsers(){
+  return JSON.parse(localStorage.getItem('users') || '[]');
+}
+
+function saveUsers(users){
+  localStorage.setItem('users', JSON.stringify(users));
+}
+
+function ensureInitialAccounts(){
+  const users = getUsers();
+  if(users.length === 0){
+    const admin = {email:'admin@nck.local', name:'Admin', password:'admin123', role:'admin'};
+    saveUsers([admin]);
+  }
+}
+
+ensureInitialAccounts();
+
+function handleLogin(event){
+  event.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
+  const errorEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+
+  errorEl.style.display = 'none';
+
+  if(!email || !password){
+    showLoginError('Please fill in all fields');
+    return;
+  }
+
+  if(password.length < 6){
+    showLoginError('Password must be at least 6 characters');
+    return;
+  }
+
+  const users = getUsers();
+  const existingUser = users.find(u => u.email === email);
+
+  if(loginMode === 'login'){
+    if(!existingUser){
+      showLoginError('Account not found. Please sign up first.');
+      return;
+    }
+    if(existingUser.password !== password){
+      showLoginError('Incorrect password. Please try again.');
+      return;
+    }
+    currentUser = {email: existingUser.email, name: existingUser.name, role: existingUser.role};
+  } else {
+    if(existingUser){
+      showLoginError('Email already registered. Please login.');
+      return;
+    }
+    const name = email.split('@')[0];
+    const role = users.length === 0 ? 'admin' : 'user';
+    const newUser = {email, name, password, role};
+    users.push(newUser);
+    saveUsers(users);
+    currentUser = {email, name, role};
+  }
+
+  const remember = document.getElementById('rememberMe').checked;
+  localStorage.setItem('user', JSON.stringify(currentUser));
+  if(remember){
+    localStorage.setItem('userRemember', 'true');
+  } else {
+    localStorage.removeItem('userRemember');
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+
+  setTimeout(() => {
+    recordOnlineUser(currentUser);
+    document.getElementById('loginOverlay').classList.add('hidden');
+    setTimeout(() => {
+      document.getElementById('loginOverlay').style.display = 'none';
+      buildNav();
+      showHome();
+      updateBookmarksCount();
+      updateTopbarUser();
+      updateAdminVisibility();
+    }, 700);
+  }, 700);
+
+}
+
+function showLoginError(message){
+  const errorEl = document.getElementById('loginError');
+  errorEl.textContent = message;
+  errorEl.style.display = 'block';
+}
+
+function toggleLoginMode(event){
+  event.preventDefault();
+  loginMode = loginMode === 'login' ? 'signup' : 'login';
+  const title = loginMode === 'login' ? 'Welcome Back' : 'Create Account';
+  const subtitle = loginMode === 'login' ? 'Sign in to continue your NCK revision journey' : 'Sign up to manage your revision profile';
+  const btnText = loginMode === 'login' ? 'Sign In' : 'Sign Up';
+  const switchText = loginMode === 'login' ? "Don't have an account?" : 'Already have an account?';
+  const toggleText = loginMode === 'login' ? 'Sign up' : 'Sign in';
+
+  document.querySelector('.login-title').textContent = title;
+  document.querySelector('.login-subtitle').textContent = subtitle;
+  document.getElementById('loginBtn').textContent = btnText;
+  document.getElementById('loginSwitchText').textContent = switchText;
+  document.getElementById('loginSwitchLink').textContent = toggleText;
+  document.getElementById('loginError').style.display = 'none';
+}
+
+function toggleChatbot(){
+  const panel = document.getElementById('chatbotPanel');
+  panel.classList.toggle('show');
+  if(panel.classList.contains('show')){
+    document.getElementById('chatbotInput').focus();
+    appendChatMessage('bot', 'Hi! I am your revision assistant. Ask me anything about the question bank, topics, or study tips.');
+  }
+}
+
+function appendChatMessage(type, text){
+  const body = document.getElementById('chatbotBody');
+  const msg = document.createElement('div');
+  msg.className = 'chatbot-msg ' + (type === 'user' ? 'user' : 'bot');
+  msg.textContent = text;
+  body.appendChild(msg);
+  body.scrollTop = body.scrollHeight;
+}
+
+function sendChatQuery(){
+  const input = document.getElementById('chatbotInput');
+  const question = input.value.trim();
+  if(!question) return;
+  appendChatMessage('user', question);
+  input.value = '';
+
+  // Enhanced AI for research and question analysis
+  setTimeout(()=>{
+    const lower = question.toLowerCase();
+    let answer = '';
+
+    // Handle follow-up commands
+    if(lower.startsWith('show question') || lower.startsWith('practice question') || lower.startsWith('view question')) {
+      const match = question.match(/question\s+(\d+)/i);
+      if(match && window.lastSearchResults) {
+        const idx = parseInt(match[1]) - 1;
+        if(idx >= 0 && idx < window.lastSearchResults.length) {
+          const item = window.lastSearchResults[idx];
+          if(lower.includes('practice')) {
+            // Load the question for practice
+            activePaper = {year: item.paper.year, session: item.paper.session, paper: item.paper.paper, source: item.paper.source, questions: [item.q], isP2: item.paper.isP2};
+            pool = [item.q];
+            qIdx = 0;
+            score = 0;
+            answered = false;
+            mode = 'practice';
+            renderExam();
+            closeSidebar();
+            answer = 'Loading question for practice...';
+          } else {
+            // Show full question details
+            answer = `Question: ${item.q.q}\n\nOptions:\n`;
+            item.q.opts.forEach((opt, i) => {
+              answer += `${String.fromCharCode(65+i)}. ${opt}\n`;
+            });
+            answer += `\nCorrect answer: ${String.fromCharCode(65+item.q.ans)}\n`;
+            if(item.q.exp) answer += `\nExplanation: ${item.q.exp}`;
+            answer += `\n\nSource: ${item.paper.year} ${item.paper.isP2 ? 'Paper 2' : 'Paper 1'} - ${item.paper.source}`;
+          }
+        } else {
+          answer = 'Invalid question number. Please specify a valid question number from the search results.';
+        }
+      } else {
+        answer = 'Please search for questions first, then ask to show or practice a specific question number.';
+      }
+    } else {
+    const foundQuestions = searchQuestionsInData(question);
+    const foundTopics = findRelatedTopics(question);
+
+    if(foundQuestions.length > 0){
+      window.lastSearchResults = foundQuestions; // Store for follow-up
+      answer += `Found ${foundQuestions.length} related question${foundQuestions.length > 1 ? 's' : ''}:\n`;
+      foundQuestions.slice(0, 3).forEach((item, idx) => {
+        answer += `${idx+1}. ${item.q.q.substring(0, 80)}${item.q.q.length > 80 ? '...' : ''} (${item.paper.year} ${item.paper.isP2 ? 'P2' : 'P1'})\n`;
+      });
+      if(foundQuestions.length > 3) answer += `...and ${foundQuestions.length - 3} more.\n`;
+      answer += '\nSay "show question 1" or "practice question 2" to see details or practice!';
+    } else if(foundTopics.length > 0){
+      answer += `Related topics I found:\n`;
+      foundTopics.slice(0, 5).forEach(topic => {
+        answer += `• ${topic}\n`;
+      });
+      answer += '\nTry searching for specific question text or topic names.';
+    } else if(lower.includes('explain') || lower.includes('what is') || lower.includes('how does') || lower.includes('why does')) {
+      answer = 'I can help explain concepts from the question bank. Try asking about specific topics like "explain cardiac cycle" or "what is placenta previa".';
+    } else if(lower.includes('practice') || lower.includes('quiz') || lower.includes('test')) {
+      answer = 'To practice questions, use the sidebar to select papers or units. You can also bookmark difficult questions for later review.';
+    } else if(lower.includes('bookmark') || lower.includes('save')) {
+      answer = 'Click the star (☆) button on any question to bookmark it. Access bookmarks from the sidebar for quick review.';
+    } else if(lower.includes('stats') || lower.includes('progress') || lower.includes('score')) {
+      answer = 'Check your progress in "My Stats" from the sidebar. It shows your accuracy, attempted questions, and performance by paper.';
+    } else if(lower.includes('admin') || lower.includes('manage')) {
+      answer = 'Admin users can add/edit/remove custom questions and manage accounts from the Admin Panel in the sidebar.';
+    } else if(lower.includes('help') || lower.includes('tips') || lower.includes('study')) {
+      answer = 'Study tips: Focus on weak areas using stats, bookmark hard questions, practice in timed mode for speed, and review explanations carefully.';
+    } else if(lower.includes('search') || lower.includes('find')) {
+      answer = 'Use the search bar at the top to find questions by keywords. I can also help search - just ask about specific topics!';
+    } else {
+      answer = 'I can help you research questions, explain topics, find related material, or guide you through the app. Try asking about specific medical topics, question types, or study strategies!';
+    }
+    }
+
+    appendChatMessage('bot', answer);
+  }, 600);
+}
+
+function searchQuestionsInData(query){
+  const results = [];
+  const lowerQuery = query.toLowerCase();
+
+  DATA.papers.forEach(paper => {
+    paper.questions.forEach(q => {
+      if(q.q.toLowerCase().includes(lowerQuery) ||
+         q.opts.some(opt => opt.toLowerCase().includes(lowerQuery)) ||
+         (q.exp && q.exp.toLowerCase().includes(lowerQuery))) {
+        results.push({paper, q});
+      }
+    });
+  });
+
+  return results;
+}
+
+function findRelatedTopics(query){
+  const topics = new Set();
+  const lowerQuery = query.toLowerCase();
+
+  DATA.papers.forEach(paper => {
+    paper.questions.forEach(q => {
+      // Extract potential topics from question text
+      const words = q.q.toLowerCase().split(/\s+/);
+      words.forEach(word => {
+        if(word.length > 4 && lowerQuery.includes(word) && !['what', 'when', 'where', 'which', 'how', 'does', 'this', 'that', 'with', 'from', 'into'].includes(word)) {
+          topics.add(word.charAt(0).toUpperCase() + word.slice(1));
+        }
+      });
+    });
+  });
+
+  return Array.from(topics);
+}
+
+// Online users
+let onlineUsers = JSON.parse(localStorage.getItem('onlineUsers') || '[]');
+let topbarMetaCache = '';
+
+function recordOnlineUser(user){
+  const existing = onlineUsers.find(u => u.email === user.email);
+  if(existing){
+    existing.lastSeen = Date.now();
+  } else {
+    onlineUsers.push({
+      ...user,
+      lastSeen: Date.now(),
+      avatar: user.name.charAt(0).toUpperCase()
+    });
+  }
+  localStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
+}
+
+// Keep online status fresh and remove stale entries
+window.addEventListener('beforeunload', () => {
+  if(currentUser?.email){
+    onlineUsers = onlineUsers.filter(u => u.email !== currentUser.email);
+    localStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
+  }
+});
+
+function showOnlineModal(){
+  const modal = document.getElementById('onlineModal');
+  const list = document.getElementById('onlineList');
+
+  topbarMetaCache = document.getElementById('topbarMeta').textContent;
+
+  // Clean up old users (older than 1 hour)
+  const now = Date.now();
+  onlineUsers = onlineUsers.filter(u => now - u.lastSeen < 3600000);
+  localStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
+  const onlineCount = onlineUsers.length;
+  document.getElementById('topbarMeta').textContent = `${onlineCount} user${onlineCount===1 ? '' : 's'} online`;
+
+  list.innerHTML = onlineUsers.map(user => `
+    <div class="online-user">
+      <div class="online-avatar">${user.avatar}</div>
+      <div class="online-info">
+        <div class="online-name">${user.name}</div>
+        <div class="online-status">Online now</div>
+      </div>
+    </div>
+  `).join('') || '<div style="text-align:center;padding:20px;color:var(--txt3)">No users online</div>';
+
+  modal.classList.add('show');
+}
+
+function closeOnlineModal(){
+  const modal = document.getElementById('onlineModal');
+  modal.classList.remove('show');
+  document.getElementById('topbarMeta').textContent = topbarMetaCache;
+}
+
+function logout(){
+  const signedOutEmail = currentUser?.email;
+  localStorage.removeItem('user');
+  localStorage.removeItem('userRemember');
+  currentUser = null;
+  if(signedOutEmail){
+    onlineUsers = onlineUsers.filter(u => u.email !== signedOutEmail);
+    localStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
+  }
+  updateTopbarUser();
+  document.getElementById('loginOverlay').style.display = 'flex';
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('loginBtn').disabled = false;
+  document.getElementById('loginBtn').textContent = 'Sign In';
+  // reflect signed-out view
+  document.getElementById('topbarTitle').textContent = 'Lord Tionyy NCK Revision';
+  document.getElementById('topbarMeta').textContent = '';
+  document.getElementById('content').innerHTML = '<div style="padding:30px;text-align:center;color:var(--txt3)">Please sign in to continue.</div>';
+}
+
+// Check if user is logged in and remembered
+const savedUser = localStorage.getItem('user');
+const remembered = localStorage.getItem('userRemember') === 'true';
+if(savedUser && remembered){
+  currentUser = JSON.parse(savedUser);
+  recordOnlineUser(currentUser);
+  document.getElementById('loginOverlay').style.display = 'none';
+} else {
+  localStorage.removeItem('user');
+  localStorage.removeItem('userRemember');
+  currentUser = null;
+  document.getElementById('loginOverlay').classList.remove('hidden');
+}
+
+// Bookmarks
+let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+
+// Progress tracking
+let progress = JSON.parse(localStorage.getItem('progress') || '{}');
+
+function recordProgress(paperKey, correct){
+  if(!progress[paperKey]) progress[paperKey] = {attempted: 0, correct: 0};
+  progress[paperKey].attempted++;
+  if(correct) progress[paperKey].correct++;
+  localStorage.setItem('progress', JSON.stringify(progress));
+}
+
+function showStats(){
+  const totalAttempted = Object.values(progress).reduce((s,p)=>s+p.attempted,0);
+  const totalCorrect = Object.values(progress).reduce((s,p)=>s+p.correct,0);
+  const accuracy = totalAttempted ? Math.round(totalCorrect/totalAttempted*100) : 0;
+  const papersAttempted = Object.keys(progress).length;
+  document.getElementById('topbarTitle').textContent = 'My Statistics';
+  document.getElementById('topbarMeta').textContent = '';
+  document.getElementById('content').innerHTML = `
+    <div class="section-title">📊 Your Progress</div>
+    <div class="home-hero" style="margin-bottom:20px">
+      <div class="stats-strip">
+        <div class="sc"><div class="sc-val">${totalAttempted}</div><div class="sc-lbl">Questions Attempted</div></div>
+        <div class="sc"><div class="sc-val">${totalCorrect}</div><div class="sc-lbl">Correct Answers</div></div>
+        <div class="sc"><div class="sc-val">${accuracy}%</div><div class="sc-lbl">Accuracy</div></div>
+        <div class="sc"><div class="sc-val">${papersAttempted}</div><div class="sc-lbl">Papers Attempted</div></div>
+      </div>
+    </div>
+    <div class="section-title">Recent Activity</div>
+    ${Object.entries(progress).slice(-10).reverse().map(([key, p]) => {
+      const acc = Math.round(p.correct/p.attempted*100);
+      return `<div style="background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:12px;margin-bottom:8px">
+        <div style="font-size:14px;font-weight:600">${key}</div>
+        <div style="font-size:12px;color:var(--txt3);margin-top:4px">${p.correct}/${p.attempted} correct (${acc}%)</div>
+      </div>`;
+    }).join('') || '<div style="text-align:center;padding:20px;color:var(--txt3)">No activity yet. Start practicing!</div>'}
+    <div style="margin-top:16px"><div class="btn" onclick="showHome()">← Back to Home</div></div>
+  `;
+  closeSidebar();
+}
+
+function toggleBookmark(){
+  const q = activeUnit ? unitPool[unitIdx] : pool[qIdx];
+  if(!q) return;
+  const key = btoa(q.q).substring(0,10); // simple hash
+  const idx = bookmarks.findIndex(b => b.key === key);
+  if(idx > -1){
+    bookmarks.splice(idx, 1);
+  } else {
+    bookmarks.push({key, q, paper: activePaper, unit: activeUnit});
+  }
+  localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+  updateBookmarkBtn();
+  updateBookmarksCount();
+}
+
+function updateBookmarksCount(){
+  const btn = document.querySelector('.sidebar-footer .btn');
+  if(btn) btn.textContent = `⭐ Bookmarks (${bookmarks.length})`;
+}
+
+function updateTopbarUser(){
+  const userEl = document.getElementById('topbarUser');
+  if(userEl && currentUser){
+    userEl.textContent = `👤 ${currentUser.name}`;
+  } else if(userEl){
+    userEl.textContent = '';
+  }
+  updateAdminVisibility();
+}
+
+function updateAdminVisibility(){
+  const adminBtn = document.getElementById('adminPanelBtn');
+  if(adminBtn && currentUser && currentUser.role === 'admin'){
+    adminBtn.style.display = 'block';
+  } else if(adminBtn){
+    adminBtn.style.display = 'none';
+  }
+}
+
+function showAdminPanel(){
+  if(!currentUser || currentUser.role !== 'admin'){
+    alert('Admin access only.');
+    return;
+  }
+  const users = getUsers();
+  const customQuestions = JSON.parse(localStorage.getItem('customQuestions') || '[]');
+  document.getElementById('topbarTitle').textContent = 'Admin Panel';
+  document.getElementById('topbarMeta').textContent = '';
+  document.getElementById('content').innerHTML = `
+    <div class="section-title">🛠 Admin Dashboard</div>
+    <div style="display:grid;gap:14px">
+      <div style="background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:14px;">
+        <div style="font-weight:700;margin-bottom:8px">User Accounts (${users.length})</div>
+        ${users.map(u => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b1);">
+            <div><strong>${u.name}</strong> (${u.role}) - ${u.email}</div>
+            ${u.email !== currentUser.email ? `<button class="btn" style="padding:4px 10px;font-size:12px" onclick="deleteUser('${u.email}')">Delete</button>` : ''}
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:14px;">
+        <strong>Add a new custom question</strong>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+          <input id="newQYear" class="login-input" placeholder="Year (e.g. 2025)" />
+          <input id="newQSource" class="login-input" placeholder="Source" />
+          <input id="newQPaper" class="login-input" placeholder="Paper Title" />
+          <input id="newQSession" class="login-input" placeholder="Session" />
+          <select id="newQIsP2" class="login-input"><option value="false">Paper 1</option><option value="true">Paper 2</option></select>
+          <input id="newQCorrect" type="number" class="login-input" placeholder="Correct option index (0-3)" min="0" max="3" />
+        </div>
+        <textarea id="newQText" class="login-input" style="height:72px;resize:vertical;margin-top:10px" placeholder="Question text"></textarea>
+        <textarea id="newQOpts" class="login-input" style="height:70px;resize:vertical;margin-top:8px" placeholder="Options, comma-separated"></textarea>
+        <textarea id="newQExp" class="login-input" style="height:56px;resize:vertical;margin-top:8px" placeholder="Explanation"></textarea>
+        <button class="btn" style="margin-top:10px" onclick="addCustomQuestion()">➕ Add Question</button>
+      </div>
+
+      <div style="background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:14px;">
+        <strong>Custom questions stored locally (${customQuestions.length})</strong>
+        <pre id="customQuestionJson" style="background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:10px;overflow:auto;max-height:160px;margin-top:8px;">${JSON.stringify(customQuestions,null,2)}</pre>
+        <button class="btn" style="margin-top:10px" onclick="exportCustomQuestions()">📋 Copy JSON</button>
+      </div>
+
+      <div style="background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:14px;">
+        <strong>Manage custom questions</strong>
+        <div id="customQuestionsList" style="margin-top:10px;display:grid;gap:8px;max-height:240px;overflow-y:auto;">
+          ${customQuestions.length ? customQuestions.map((item,idx)=>`
+            <div style="padding:8px;border:1px solid var(--b2);border-radius:8px;background:var(--s2);">
+              <div style="font-size:13px;line-height:1.4;color:var(--txt)"><strong>${idx+1}. ${item.q.q}</strong></div>
+              <div style="font-size:12px;color:var(--txt3);margin-top:6px">Paper: ${item.paper} · Year: ${item.year} · ${item.isP2?'P2':'P1'}</div>
+              <div style="margin-top:5px;display:flex;gap:6px;">
+                <button class="btn" style="padding:4px 10px;font-size:12px" onclick="editCustomQuestion(${idx})">✏️ Edit</button>
+                <button class="btn" style="padding:4px 10px;font-size:12px;background:rgba(255,77,109,.12);color:var(--red)" onclick="removeCustomQuestion(${idx})">🗑 Remove</button>
+              </div>
+            </div>
+          `).join('') : '<div style="color:var(--txt3);font-size:13px">No custom questions yet.</div>'}
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px"><div class="btn" onclick="showHome()">← Back to Home</div></div>
+  `;
+  closeSidebar();
+}
+
+function deleteUser(email){
+  if(!confirm('Delete user '+ email +'? This cannot be undone.')) return;
+  let users = getUsers();
+  users = users.filter(u=>u.email!==email);
+  saveUsers(users);
+  showAdminPanel();
+}
+
+function addCustomQuestion(){
+  const y = document.getElementById('newQYear').value.trim();
+  const src = document.getElementById('newQSource').value.trim();
+  const pap = document.getElementById('newQPaper').value.trim();
+  const ses = document.getElementById('newQSession').value.trim();
+  const qtext = document.getElementById('newQText').value.trim();
+  const optsStr = document.getElementById('newQOpts').value.trim();
+  const correct = parseInt(document.getElementById('newQCorrect').value,10);
+  const exp = document.getElementById('newQExp').value.trim();
+  const isP2 = document.getElementById('newQIsP2').value === 'true';
+
+  if(!y||!pap||!ses||!qtext||!optsStr||isNaN(correct)||correct<0){
+    alert('Please fill all required fields and valid correct index');
+    return;
+  }
+
+  const opts = optsStr.split(',').map(s=>s.trim()).filter(Boolean);
+  if(opts.length<2){alert('At least two options required');return;}
+  if(correct >= opts.length){alert('Correct index is out of range');return;}
+
+  const custom = JSON.parse(localStorage.getItem('customQuestions') || '[]');
+  const newQ = {year:y, session:ses, paper:pap, source:src, isP2, q:{q:qtext, opts, ans:correct, exp}, custom:true};
+  custom.push(newQ);
+  localStorage.setItem('customQuestions', JSON.stringify(custom));
+  mergeCustomQuestions();
+  showAdminPanel();
+}
+
+function exportCustomQuestions(){
+  const custom = localStorage.getItem('customQuestions') || '[]';
+  navigator.clipboard.writeText(custom).then(()=>alert('Copied custom questions JSON to clipboard'));
+}
+
+function removeCustomQuestion(idx){
+  const custom = JSON.parse(localStorage.getItem('customQuestions') || '[]');
+  if(!custom[idx]) return;
+  if(!confirm('Delete custom question #' + (idx+1) + '?')) return;
+  custom.splice(idx,1);
+  localStorage.setItem('customQuestions', JSON.stringify(custom));
+  mergeCustomQuestions();
+  showAdminPanel();
+}
+
+function editCustomQuestion(idx){
+  const custom = JSON.parse(localStorage.getItem('customQuestions') || '[]');
+  const item = custom[idx];
+  if(!item) return;
+
+  const qtext = prompt('Question', item.q.q); if(qtext===null) return;
+  const opts = prompt('Options (comma-separated)', item.q.opts.join(', ')); if(opts===null) return;
+  const optArr = opts.split(',').map(o=>o.trim()).filter(Boolean);
+  if(optArr.length < 2){ alert('At least 2 options required'); return; }
+
+  const ans = parseInt(prompt('Correct answer index (0..' + (optArr.length-1) + ')', item.q.ans),10);
+  if(isNaN(ans) || ans < 0 || ans >= optArr.length){ alert('Invalid answer index'); return; }
+
+  const exp = prompt('Explanation (optional)', item.q.exp || '') || '';
+
+  item.q.q = qtext;
+  item.q.opts = optArr;
+  item.q.ans = ans;
+  item.q.exp = exp;
+
+  custom[idx] = item;
+  localStorage.setItem('customQuestions', JSON.stringify(custom));
+  mergeCustomQuestions();
+  showAdminPanel();
+}
+
+function mergeCustomQuestions(){
+  const custom = JSON.parse(localStorage.getItem('customQuestions') || '[]');
+  custom.forEach(entry=>{
+    const yearBucket = YEARS[entry.year] || [];
+    if(!YEARS[entry.year]){YEARS[entry.year]=yearBucket;}
+    let yearPaper = yearBucket.find(p=>p.paper===entry.paper && p.session===entry.session);
+    if(!yearPaper){
+      yearPaper = {year:entry.year, session:entry.session, paper:entry.paper, source:entry.source||'Custom', isP2:entry.isP2, questions:[]};
+      DATA.papers.push(yearPaper);
+      yearBucket.push(yearPaper);
+    }
+    // avoid duplicate custom question re-injection by question text
+    const already = yearPaper.questions.some(q=>q.q.trim()===entry.q.q.trim());
+    if(!already){
+      yearPaper.questions.push(entry.q);
+    }
+  });
+}
+
+mergeCustomQuestions();
+
+function resetApp(){
+  if(confirm('Reset app data and log out? This will clear all progress, bookmarks, and user settings.')){
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+function updateBookmarkBtn(){
+  const q = activeUnit ? unitPool[unitIdx] : pool[qIdx];
+  if(!q) return;
+  const key = btoa(q.q).substring(0,10);
+  const btn = document.getElementById(activeUnit ? 'ubookmarkBtn' : 'bookmarkBtn');
+  if(btn){
+    const isBookmarked = bookmarks.some(b => b.key === key);
+    btn.textContent = isBookmarked ? '★' : '☆';
+    btn.classList.toggle('bookmarked', isBookmarked);
+  }
+}
+
+function showBookmarks(){
+  document.getElementById('topbarTitle').textContent = `Bookmarks (${bookmarks.length})`;
+  document.getElementById('topbarMeta').textContent = '';
+  document.getElementById('content').innerHTML = `
+    <div class="section-title">⭐ Bookmarked Questions</div>
+    ${bookmarks.length ? bookmarks.map((item, idx) => `
+      <div class="q-card" onclick="loadBookmarkedQuestion(${idx})" style="cursor:pointer">
+        <div class="q-top">
+          <div class="q-meta-row">
+            <span class="q-num">#${idx+1}</span>
+            <span class="q-paper-tag ${item.paper.isP2?'tag-p2':'tag-p1'}">${item.paper.year} ${item.paper.isP2?'Paper 2':'Paper 1'}</span>
+            <span class="q-src-tag">${item.paper.source.substring(0,25)}</span>
+          </div>
+          <div class="q-text">${item.q.q}</div>
+          <div style="font-size:12px;color:var(--txt3);margin-top:8px">Click to practice this question</div>
+        </div>
+      </div>
+    `).join('') : '<div style="text-align:center;padding:40px;color:var(--txt3)">No bookmarked questions yet.</div>'}
+    <div style="margin-top:16px"><div class="btn" onclick="showHome()">← Back to Home</div></div>
+  `;
+  closeSidebar();
+}
+
+function loadBookmarkedQuestion(idx){
+  const item = bookmarks[idx];
+  activePaper = item.paper;
+  pool = [item.q];
+  qIdx = 0;
+  score = 0;
+  answered = false;
+  mode = 'practice';
+  renderExam();
+  closeSidebar();
+}
+
+// Search functionality
+let searchResults = [];
+function searchQuestions(){
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  if(!query){
+    searchResults = [];
+    showHome();
+    return;
+  }
+  searchResults = [];
+  DATA.papers.forEach(paper => {
+    paper.questions.forEach((q, idx) => {
+      if(q.q.toLowerCase().includes(query) || q.opts.some(opt => opt.toLowerCase().includes(query))){
+        searchResults.push({paper, question: q, qIdx: idx});
+      }
+    });
+  });
+  renderSearchResults();
+}
+
+function clearSearch(){
+  document.getElementById('searchInput').value = '';
+  searchResults = [];
+  showHome();
+}
+
+function renderSearchResults(){
+  document.getElementById('topbarTitle').textContent = `Search Results (${searchResults.length})`;
+  document.getElementById('topbarMeta').textContent = '';
+  document.getElementById('content').innerHTML = `
+    <div class="section-title">🔍 Search Results</div>
+    ${searchResults.length ? searchResults.map((item, idx) => `
+      <div class="q-card" onclick="loadSearchQuestion(${idx})" style="cursor:pointer">
+        <div class="q-top">
+          <div class="q-meta-row">
+            <span class="q-num">#${idx+1}</span>
+            <span class="q-paper-tag ${item.paper.isP2?'tag-p2':'tag-p1'}">${item.paper.year} ${item.paper.isP2?'Paper 2':'Paper 1'}</span>
+            <span class="q-src-tag">${item.paper.source.substring(0,25)}</span>
+          </div>
+          <div class="q-text">${item.question.q}</div>
+          <div style="font-size:12px;color:var(--txt3);margin-top:8px">Click to practice this question</div>
+        </div>
+      </div>
+    `).join('') : '<div style="text-align:center;padding:40px;color:var(--txt3)">No questions found matching your search.</div>'}
+    <div style="margin-top:16px"><div class="btn" onclick="clearSearch()">← Back to Home</div></div>
+  `;
+}
+
+function loadSearchQuestion(idx){
+  const item = searchResults[idx];
+  activePaper = {year: item.paper.year, session: item.paper.session, paper: item.paper.paper, source: item.paper.source, questions: [item.question], isP2: item.paper.isP2};
+  pool = [item.question];
+  qIdx = 0;
+  score = 0;
+  answered = false;
+  mode = 'practice';
+  renderExam();
+  closeSidebar();
+}
 
 
 // ═══ WELCOME SCREEN ═══
@@ -1189,7 +2129,10 @@ function renderUnitExam(){
       </div>
       <div class="exp-box" id="uexpBox"></div>
       <div class="q-foot">
-        <div class="btn" onclick="uprevQ()">← Prev</div>
+        <div style="display:flex;gap:8px">
+          <div class="btn" onclick="uprevQ()">← Prev</div>
+          <button class="bookmark-btn" id="ubookmarkBtn" onclick="toggleBookmark()">☆</button>
+        </div>
         <div class="btn" id="unextBtn" style="display:none;background:${u.grad};border:none;color:#fff;font-weight:600;box-shadow:0 4px 14px ${u.color}44" onclick="unextQ()">
           ${unitIdx+1<unitPool.length?'Next →':'See Results'}
         </div>
@@ -1197,6 +2140,7 @@ function renderUnitExam(){
     </div>`;
 
   if(unitMode==='timed')startUnitTimer();
+  updateBookmarkBtn();
 }
 
 function setUnitMode(m){unitMode=m;clearInterval(unitTimerID);renderUnitExam();}
@@ -1227,6 +2171,7 @@ function uchoose(i,isOk){
   document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
   if(isOk){document.getElementById('uopt'+i).classList.add('correct');unitScore++;}
   else{document.getElementById('uopt'+i).classList.add('wrong');document.getElementById('uopt'+q.ans).classList.add('reveal');}
+  recordProgress('Unit: ' + activeUnit.name, isOk);
   if(unitMode!=='exam'){
     document.getElementById('uexpBox').innerHTML=`<div class="exp ${isOk?'ok':'no'}"><div class="exp-lbl">${isOk?'✓ Correct!':'✗ Incorrect'}</div>${!isOk?`<strong>${q.opts[q.ans]}</strong>`:''} ${q.exp?`<div style="margin-top:${isOk?'0':'7px'}">${q.exp}</div>`:''}</div>`;
   }
@@ -1274,8 +2219,15 @@ function renderUnitScore(){
 }
 
 
-buildNav();
-showHome();
+// Initialize app only if logged in
+if(currentUser){
+  buildNav();
+  showHome();
+  updateBookmarksCount();
+  updateTopbarUser();
+} else {
+  document.getElementById('loginOverlay').style.display = 'flex';
+}
 </script>
 </body>
 </html>
