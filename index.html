@@ -1069,9 +1069,9 @@ function showHome(){
   closeSidebar();
 
   if(!activePaper){
-    const firstYear = Object.keys(YEARS).filter(y => y !== 'OB-GYN').sort((a,b)=>b-a)[0];
-    if(firstYear){
-      loadYear(firstYear, 'p1');
+    const firstPaper = DATA.papers.find(p=>!p.isP2 && p.year!=='OB-GYN') || DATA.papers[0];
+    if(firstPaper){
+      loadPaper(firstPaper.year, firstPaper.session, firstPaper.paper);
     }
   }
 }
