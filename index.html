@@ -8,19 +8,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#050710;--s1:#090c1a;--s2:#0f1428;--s3:#151c38;--s4:#1c2548;
-  --b1:rgba(120,80,255,.12);--b2:rgba(120,80,255,.22);--b3:rgba(120,80,255,.40);
-  --acc:#7c4dff;--acc2:#a78bfa;--acc-d:rgba(124,77,255,.16);--acc-g:rgba(124,77,255,.30);
-  --grn:#00e5a0;--grn-d:rgba(0,229,160,.13);
-  --amb:#ffb547;--amb-d:rgba(255,181,71,.13);
-  --red:#ff4d6d;--red-d:rgba(255,77,109,.13);
-  --pur:#e879f9;--pur-d:rgba(232,121,249,.13);
-  --teal:#22d3ee;--teal-d:rgba(34,211,238,.13);
-  --gold:#ffd700;--gold-d:rgba(255,215,0,.13);
-  --txt:#eef0ff;--txt2:#9da8d0;--txt3:#505880;
+  --bg:#050710;
+  --s1:#1c1d23;--s2:#272a31;--s3:#1c1e2e;--s4:#2f2a3f;
+  --b1:rgba(255,255,255,.12);--b2:rgba(255,255,255,.22);--b3:rgba(255,255,255,.32);
+  --acc:#ffdc7d;--acc2:#fff;--acc-d:rgba(255,220,125,.3);--acc-g:rgba(255,219,127,.5);
+  --grn:#6fdc99;--grn-d:rgba(111,220,153,.2);
+  --amb:#ff6a8d;--amb-d:rgba(255,106,141,.2);
+  --red:#ff4b68;--red-d:rgba(255,75,104,.2);
+  --pur:#ae5cff;--pur-d:rgba(174,92,255,.25);
+  --teal:#34d7f2;--teal-d:rgba(52,215,242,.2);
+  --gold:#ffe073;--gold-d:rgba(255,224,115,.15);
+  --txt:#f3f3f8;--txt2:#e6e3f5;--txt3:#c8c3d4;
   --fnt:"Plus Jakarta Sans",sans-serif;--mono:"JetBrains Mono",monospace;
   --r:10px;--r2:14px;
 }
+
+body{
+  background: radial-gradient(circle at 20% 20%, #ff9a9e 0%, #fad0c4 30%, #fbc2eb 60%, #a18cd1 100%);
+}
+
+.app{background:linear-gradient(135deg, rgba(255, 77, 109, 0.25), rgba(99, 67, 195, 0.35), rgba(34, 211, 238, 0.2));}
+
+.sidebar{background:linear-gradient(180deg, #1c0e3d 0%, #2a0f45 45%, #3b0068 100%);border-color:rgba(255,255,255,0.15);}
+
+.topbar{background:linear-gradient(90deg, rgba(255,79,123,0.82), rgba(121,46,189,0.82));}
+
+.content{background:rgba(255,255,255,0.04);border-radius:20px;}
 [data-theme="light"]{
   --bg:#f8f9fa;--s1:#ffffff;--s2:#f1f3f4;--s3:#e8eaed;--s4:#dadce0;
   --b1:rgba(0,0,0,.08);--b2:rgba(0,0,0,.12);--b3:rgba(0,0,0,.16);
@@ -1020,7 +1033,7 @@ function showHome(){
 
   document.getElementById('content').innerHTML=`
     <div class="home-hero">
-      <div class="hero-eyebrow"><span class="dot dot-teal"></span> LORD TIONYY · 2,871 QUESTIONS</div>
+      <div class="hero-eyebrow"><span class="dot dot-teal"></span> LORD TIONYY · ${totalQ} QUESTIONS</div>
       <h1>Lord Tionyy<br><span>NCK Revision</span></h1>
       <p style="font-size:15px;margin-bottom:8px;color:var(--txt)">Hello, <strong>${currentUser ? currentUser.name : 'Learner'}</strong> — your personalised revision starts here.</p>
       <p>Paper 1 (2009–2025) + Paper 2 + OB-GYN + Mock Exams. ${totalQ} questions with answers &amp; rationales.</p>
@@ -1048,7 +1061,19 @@ function showHome(){
       <div class="subj-grid">${p2Cards}</div>
     </div>`;
 
+  if(!DATA || !DATA.papers || DATA.papers.length === 0){
+    document.getElementById('content').innerHTML = '<div style="padding:30px;text-align:center;color:var(--txt3)">No questions available. Please refresh or re-import the question bank.</div>';
+    return;
+  }
+
   closeSidebar();
+
+  if(!activePaper){
+    const firstYear = Object.keys(YEARS).filter(y => y !== 'OB-GYN').sort((a,b)=>b-a)[0];
+    if(firstYear){
+      loadYear(firstYear, 'p1');
+    }
+  }
 }
 
 function showSection(s){
