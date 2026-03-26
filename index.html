@@ -2299,12 +2299,16 @@ function initializeApp(){
     try {
       buildNav();
       showHome();
+      showSection('p1');
       updateBookmarksCount();
       updateTopbarUser();
       updateAdminVisibility();
+      // Debug info if user still has trouble:
+      console.log('Load | currentUser:', currentUser, 'activePaper:', activePaper ? activePaper.paper : 'none', 'totalQ:', DATA && DATA.papers ? DATA.papers.reduce((s,p)=>s+p.questions.length,0) : 0);
     } catch(e) {
       console.error('Error initializing app:', e);
       document.getElementById('loginOverlay').style.display = 'flex';
+      document.getElementById('content').innerHTML = '<div style="padding:20px;color:#fff;">Error loading question content. Please refresh or check console for details.</div>';
     }
   } else {
     document.getElementById('loginOverlay').style.display = 'flex';
