@@ -540,6 +540,75 @@ body::before{content:'';position:fixed;inset:0;
   .unit-grid{grid-template-columns:1fr}
 }
 
+
+/* ══ UNIT CARDS (missing styles) ══ */
+.unit-card{position:relative;background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:18px 18px 14px;cursor:pointer;transition:all .2s ease;overflow:hidden;}
+.unit-card:hover{transform:translateY(-3px);}
+.uc-emoji{font-size:28px;display:block;margin-bottom:10px;position:relative;}
+.uc-name{font-size:14px;font-weight:700;color:var(--txt);margin-bottom:4px;position:relative;}
+.uc-desc{font-size:11px;color:var(--txt3);line-height:1.5;margin-bottom:12px;position:relative;}
+.uc-footer{display:flex;align-items:center;justify-content:space-between;position:relative;}
+.uc-count{font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:99px;}
+.uc-start{font-size:12px;font-weight:700;opacity:.7;transition:opacity .15s;}
+.unit-card:hover .uc-start{opacity:1;}
+.unit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:24px;}
+
+/* ══ UNIT EXAM HEADER ══ */
+.unit-exam-hdr{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:14px;margin-bottom:15px;flex-wrap:wrap;}
+.ue-icon{font-size:28px;flex-shrink:0;}
+.ue-title{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px;}
+.ue-meta{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;}
+.ue-actions{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap;}
+.btn-unit{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:500;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;transition:all .15s;}
+.btn-unit:hover{background:rgba(255,255,255,.25);}
+
+/* ══ NAV ITEM (sidebar unit link) ══ */
+.nav-item{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;font-size:12px;cursor:pointer;margin-bottom:4px;border:1px solid transparent;transition:all .15s;}
+.ni-icon{flex-shrink:0;}
+.ni-count{margin-left:auto;font-size:10px;font-family:var(--mono);padding:1px 7px;border-radius:99px;}
+
+/* ══ BOOKMARK ══ */
+.bm-btn{background:none;border:none;cursor:pointer;font-size:18px;color:var(--txt3);padding:4px 8px;border-radius:8px;transition:all .15s;line-height:1;}
+.bm-btn:hover{color:var(--gold);background:var(--gold-d);}
+.bm-btn.bm-active{color:var(--gold);}
+
+/* ══ STREAK BADGE ══ */
+.streak-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,181,71,.15);border:1px solid rgba(255,181,71,.3);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--amb);font-family:var(--mono);transition:all .3s;}
+.streak-badge.streak-pulse{animation:spulse .4s ease;}
+@keyframes spulse{0%{transform:scale(1)}50%{transform:scale(1.18)}100%{transform:scale(1)}}
+
+/* ══ KEYBOARD HINT ══ */
+.kbd-hint{display:flex;gap:6px;flex-wrap:wrap;padding:8px 0 2px;opacity:.55;}
+.kbd{background:var(--s3);border:1px solid var(--b2);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-size:10px;font-family:var(--mono);color:var(--txt2);}
+
+/* ══ PROGRESS SAVED DOT ══ */
+.saved-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block;margin-left:4px;animation:blink 2s ease-in-out infinite;}
+
+/* ══ SCORE DETAIL ══ */
+.score-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0;}
+.sd-item{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:10px 12px;text-align:left;}
+.sd-val{font-size:18px;font-weight:800;font-family:var(--mono);}
+.sd-lbl{font-size:10px;color:var(--txt3);margin-top:2px;}
+
+/* ══ BOOKMARKS VIEW ══ */
+.bm-empty{text-align:center;padding:40px 20px;color:var(--txt3);}
+.bm-empty-icon{font-size:40px;margin-bottom:12px;}
+
+/* ══ SMOOTH Q TRANSITIONS ══ */
+@keyframes slideIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.q-card{animation:slideIn .2s ease both;}
+
+/* ══ GRADE BAR ══ */
+.grade-bar{height:8px;border-radius:99px;background:var(--s3);overflow:hidden;margin:6px 0 10px;}
+.grade-fill{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.22,1,.36,1);}
+
+/* ══ RESPONSIVE FIXES ══ */
+@media(max-width:480px){
+  .unit-grid{grid-template-columns:1fr 1fr;}
+  .uc-name{font-size:12px;}
+  .score-detail-grid{grid-template-columns:1fr 1fr;}
+  .exam-actions{display:none;}
+}
 </style>
 </head>
 <body>
@@ -1279,6 +1348,197 @@ function renderUnitScore(){
 
 buildNav();
 showHome();
+
+
+// ══ BOOKMARK SYSTEM ══
+function getBM(){try{return JSON.parse(localStorage.getItem('nck_bm')||'[]');}catch{return[];}}
+function saveBM(arr){try{localStorage.setItem('nck_bm',JSON.stringify(arr));}catch{}}
+function isBM(q){return getBM().some(b=>b.q===q.q);}
+function toggleBM(q){
+  let bms=getBM();
+  const idx=bms.findIndex(b=>b.q===q.q);
+  if(idx>-1){bms.splice(idx,1);}else{bms.push({q:q.q,opts:q.opts,ans:q.ans,exp:q.exp,_added:Date.now()});}
+  saveBM(bms);
+  const btn=document.getElementById('bmBtn');
+  if(btn){btn.textContent=idx>-1?'🔖':'⭐';btn.classList.toggle('bm-active',idx<=0);}
+}
+
+// ══ STREAK TRACKER ══
+let _streak=0,_bestStreak=0;
+function updateStreak(correct){
+  if(correct){_streak++;if(_streak>_bestStreak)_bestStreak=_streak;}else{_streak=0;}
+  const el=document.getElementById('streakBadge');
+  if(el){el.textContent='🔥 '+_streak;if(correct&&_streak>1){el.classList.add('streak-pulse');setTimeout(()=>el.classList.remove('streak-pulse'),400);}}
+}
+
+// ══ PROGRESS PERSISTENCE ══
+function getPaperKey(p){return'nck_prog_'+(p.year||'')+'_'+(p.session||'').replace(/\s/g,'_');}
+function saveProgress(p,idx,sc,total){
+  try{localStorage.setItem(getPaperKey(p),JSON.stringify({idx,sc,total,ts:Date.now()}));}catch{}
+}
+function getProgress(p){try{return JSON.parse(localStorage.getItem(getPaperKey(p))||'null');}catch{return null;}}
+function clearProgress(p){try{localStorage.removeItem(getPaperKey(p));}catch{}}
+
+// ══ KEYBOARD SHORTCUTS ══
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeSidebar();return;}
+  // Answer keys A-D / 1-4
+  const keyMap={'a':0,'b':1,'c':2,'d':3,'1':0,'2':1,'3':2,'4':3};
+  const k=e.key.toLowerCase();
+  if(k in keyMap){
+    const i=keyMap[k];
+    // Unit exam
+    const uopt=document.getElementById('uopt'+i);
+    if(uopt&&!uopt.disabled){uopt.click();return;}
+    // Regular exam
+    const opt=document.getElementById('opt'+i);
+    if(opt&&!opt.disabled){opt.click();return;}
+  }
+  // Arrow right / Enter = next
+  if((e.key==='ArrowRight'||e.key==='Enter')&&!e.target.matches('input,textarea')){
+    const nb=document.getElementById('nextBtn');
+    if(nb&&nb.style.display!=='none'){nb.click();return;}
+    const unb=document.getElementById('unextBtn');
+    if(unb&&unb.style.display!=='none'){unb.click();return;}
+  }
+});
+
+// ══ PATCH renderExam to add bookmark + streak + keyboard hints ══
+const _origRenderExam=renderExam;
+renderExam=function(){
+  _origRenderExam();
+  // inject bookmark button into q-foot
+  const foot=document.querySelector('.q-foot');
+  const q=pool[qIdx];
+  if(foot&&q){
+    const bmBtn=document.createElement('button');
+    bmBtn.id='bmBtn';
+    bmBtn.className='bm-btn'+(isBM(q)?' bm-active':'');
+    bmBtn.textContent=isBM(q)?'⭐':'🔖';
+    bmBtn.title='Bookmark this question';
+    bmBtn.onclick=()=>toggleBM(q);
+    foot.appendChild(bmBtn);
+    // streak badge in prog-stats
+    const ps=document.querySelector('.prog-stats');
+    if(ps){const sb=document.createElement('span');sb.id='streakBadge';sb.className='streak-badge';sb.textContent='🔥 '+_streak;ps.appendChild(sb);}
+    // keyboard hint (desktop only)
+    if(window.innerWidth>600){
+      const hint=document.createElement('div');
+      hint.className='kbd-hint';
+      hint.innerHTML='<span class="kbd">A</span><span class="kbd">B</span><span class="kbd">C</span><span class="kbd">D</span><span style="color:var(--txt3);font-size:10px;margin-left:4px">to answer</span><span class="kbd" style="margin-left:8px">→</span><span style="color:var(--txt3);font-size:10px;margin-left:4px">next</span>';
+      const qTop=document.querySelector('.q-top');
+      if(qTop)qTop.appendChild(hint);
+    }
+  }
+};
+
+// Patch choose() to track streak
+const _origChoose=choose;
+choose=function(i,isOk){
+  _origChoose(i,isOk);
+  updateStreak(isOk);
+  // save progress
+  if(activePaper)saveProgress(activePaper,qIdx+1,score,pool.length);
+};
+
+// Patch renderScore to show detail breakdown
+const _origRenderScore=renderScore;
+renderScore=function(){
+  _origRenderScore();
+  // Inject grade detail after score-sub
+  const scoreSub=document.querySelector('.score-sub');
+  if(!scoreSub)return;
+  const total=pool.length,pct=total>0?Math.round(score/total*100):0;
+  const grade=pct>=80?{g:'A',c:'var(--grn)',l:'Distinction'}:pct>=60?{g:'B',c:'var(--amb)',l:'Credit'}:pct>=50?{g:'C',c:'#4fc3f7',l:'Pass'}:{g:'F',c:'var(--red)',l:'Needs Work'};
+  const detail=document.createElement('div');
+  detail.className='score-detail-grid';
+  detail.innerHTML=`
+    <div class="sd-item"><div class="sd-val" style="color:${grade.c}">${grade.g}</div><div class="sd-lbl">Grade · ${grade.l}</div></div>
+    <div class="sd-item"><div class="sd-val" style="color:var(--amb)">🔥 ${_bestStreak}</div><div class="sd-lbl">Best Streak</div></div>
+    <div class="sd-item"><div class="sd-val" style="color:var(--red)">${total-score}</div><div class="sd-lbl">Wrong answers</div></div>
+    <div class="sd-item"><div class="sd-val" style="color:var(--teal)">${Math.round(pool.length/total*100)||0}%</div><div class="sd-lbl">Completion</div></div>`;
+  scoreSub.after(detail);
+  // grade bar
+  const bar=document.createElement('div');
+  bar.innerHTML=`<div class="grade-bar" style="margin:0 auto 14px;max-width:280px"><div class="grade-fill" style="width:0%;background:${grade.c}" id="gfill"></div></div>`;
+  detail.after(bar);
+  setTimeout(()=>{const gf=document.getElementById('gfill');if(gf)gf.style.width=pct+'%';},80);
+  // clear saved progress for this paper
+  if(activePaper)clearProgress(activePaper);
+  _streak=0;_bestStreak=0;
+};
+
+// ══ BOOKMARKS PAGE ══
+function showBookmarks(){
+  const bms=getBM();
+  document.getElementById('topbarTitle').textContent='⭐ Bookmarked Questions';
+  document.getElementById('topbarMeta').textContent=bms.length+' saved';
+  if(!bms.length){
+    document.getElementById('content').innerHTML=`<div class="bm-empty"><div class="bm-empty-icon">🔖</div><div style="font-size:16px;font-weight:700;margin-bottom:8px">No bookmarks yet</div><div style="color:var(--txt3);font-size:13px">Star questions while revising to save them here</div><div style="margin-top:16px"><div class="btn" onclick="showHome()">← Back to Home</div></div></div>`;
+    return;
+  }
+  // Load bookmarks as a quiz session
+  activePaper={year:'Bookmarks',session:'Starred Questions',paper:'My Bookmarks',source:'Your saved questions',questions:bms,isP2:false};
+  pool=shuffle([...bms]);qIdx=0;score=0;answered=false;mode='practice';
+  renderExam();
+}
+
+// Add bookmark link to sidebar footer
+(function(){
+  const foot=document.querySelector('.sidebar-footer');
+  if(!foot)return;
+  const link=document.createElement('div');
+  link.className='nav-item';
+  link.style.cssText='background:var(--gold-d);border-color:rgba(255,215,0,.25);color:var(--gold);font-weight:600;margin-top:8px;';
+  link.innerHTML='<span class="ni-icon">⭐</span>Bookmarks<span class="ni-count" id="bmCount" style="color:var(--gold);background:rgba(255,215,0,.2)">0</span>';
+  link.onclick=showBookmarks;
+  foot.appendChild(link);
+  // update count
+  function updateBMCount(){const el=document.getElementById('bmCount');if(el)el.textContent=getBM().length;}
+  setInterval(updateBMCount,1500);
+  updateBMCount();
+})();
+
+// ══ RESUME PROMPT ══
+const _origLoadPaper=loadPaper;
+loadPaper=function(yr,session,paperName){
+  const paper=DATA.papers.find(p=>p.year===yr&&p.session===session&&p.paper===paperName);
+  if(!paper){_origLoadPaper(yr,session,paperName);return;}
+  const prog=getProgress(paper);
+  if(prog&&prog.idx>0&&prog.idx<prog.total){
+    // Show resume prompt
+    clearInterval(timerID);
+    activePaper=paper;
+    pool=shuffle([...paper.questions]);
+    document.getElementById('topbarTitle').textContent=yr+' — '+session;
+    document.getElementById('content').innerHTML=`
+      <div class="score-screen" style="max-width:420px">
+        <div style="font-size:36px;margin-bottom:12px">📋</div>
+        <div class="score-title">Resume Session?</div>
+        <div class="score-sub">${paper.paper}</div>
+        <div class="score-detail-grid" style="margin-top:12px">
+          <div class="sd-item"><div class="sd-val" style="color:var(--acc)">${prog.idx}</div><div class="sd-lbl">Questions done</div></div>
+          <div class="sd-item"><div class="sd-val" style="color:var(--grn)">${prog.sc}</div><div class="sd-lbl">Correct so far</div></div>
+        </div>
+        <div class="score-actions" style="margin-top:16px">
+          <div class="btn primary" onclick="resumePaper(${prog.idx},${prog.sc})">↪ Resume</div>
+          <div class="btn" onclick="startFresh()">🔄 Start Fresh</div>
+        </div>
+      </div>`;
+    // Highlight nav
+    document.querySelectorAll('.paper-btn').forEach(b=>b.classList.remove('active'));
+    const pid='pb-'+yr+'-'+session.replace(/[\s\/]/g,'-')+'-'+paperName.replace(/[\s:\/]/g,'-');
+    const pb=document.getElementById(pid);
+    if(pb)pb.classList.add('active');
+    closeSidebar();
+  }else{
+    _origLoadPaper(yr,session,paperName);
+  }
+};
+
+function resumePaper(idx,sc){qIdx=idx;score=sc;answered=false;mode='practice';renderExam();}
+function startFresh(){clearProgress(activePaper);pool=shuffle([...activePaper.questions]);qIdx=0;score=0;answered=false;mode='practice';renderExam();}
+
 </script>
 </body>
 </html>
